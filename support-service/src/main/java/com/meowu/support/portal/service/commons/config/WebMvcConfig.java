@@ -18,7 +18,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport{
 
     @Override
     protected void configureMessageConverters(List<HttpMessageConverter<?>> converters){
-        //gson convert
+        // gson convert
         GsonHttpMessageConverter gsonConverter = new GsonHttpMessageConverter();
         gsonConverter.setDefaultCharset(CHARSET);
         gsonConverter.setGson(GsonUtils.getGson());
