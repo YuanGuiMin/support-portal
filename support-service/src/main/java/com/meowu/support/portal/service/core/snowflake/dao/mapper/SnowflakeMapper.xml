@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+                        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.meowu.support.portal.service.core.snowflake.dao.mapper.SnowflakeMapper">
+
+    <sql id="WHERE_SQL">
+        <if test="params != null and params.conditions != null and !params.conditions.isEmpty">
+            <where>
+                <foreach collection="params.conditions" item="criterion">
+                    <trim prefix="AND (" suffix=")">
+                        <choose>
+                            <when test="criterion.singleValue">
+                                ${criterion.field} ${criterion.operator} #{criterion.value}
+                            </when>
+                            <when test="criterion.twinValue">
+                                ${criterion.field} ${criterion.operator} #{criterion.value} AND ${criterion.secondValue}
+                            </when>
+                            <when test="criterion.listValue">
+                                ${criterion.field} ${criterion.operator}
+                                <foreach collection="criterion.value" item="value" open="(" close=")" separator=",">
+                                    #{value}
+                                </foreach>
+                            </when>
+                            <when test="criterion.noValue">
+                                ${criterion.field} ${criterion.operator}
+                            </when>
+                            <when test="criterion.criterionValue">
+                                <foreach collection="criterion.value" item="item" open="(" close=")" separator="criterion.operator">
+                                    <trim prefix="(" suffix=")">
+                                        <choose>
+                                            <when test="item.singleValue">
+                                                ${item.field} ${item.operator} #{item.value}
+                                            </when>
+                                            <when test="item.twinValue">
+                                                ${item.field} ${item.operator} #{item.value} AND ${item.secondValue}
+                                            </when>
+                                            <when test="item.listValue">
+                                                ${item.field} ${item.operator}
+                                                <foreach collection="item.value" item="value" open="(" close=")" separator=",">
+                                                    #{value}
+                                                </foreach>
+                                            </when>
+                                            <when test="item.noValue">
+                                                ${item.field} ${item.operator}
+                                            </when>
+                                        </choose>
+                                    </trim>
+                                </foreach>
+                            </when>
+                        </choose>
+                    </trim>
+                </foreach>
+            </where>
+        </if>
+    </sql>
+
+    <sql id="SORT_SQL">
+        <if test="params != null and params.sort != null and !params.sort.isEmpty">
+            ORDER BY
+            <foreach collection="params.sort" item="sort" separator=",">
+                #{sort.field} ${sort.value}
+            </foreach>
+        </if>
+    </sql>
+
+    <sql id="LIMIT_SQL">
+        <if test="params != null and params.limit != null">
+            ${params.limit.operator} ${params.limit.value}, ${params.limit.secondValue}
+        </if>
+    </sql>
+
+    <sql id="GROUP_BY_SQL">
+        <if test="params != null and params.groupBy != null">
+            ${params.groupBy.operator} ${params.groupBy.value}
+        </if>
+    </sql>
+
+    <resultMap id="snowflake" type="com.meowu.support.portal.client.snowflake.entity.Snowflake">
+        <id     column="id"          property="id"          javaType="java.lang.String"/>
+        <result column="center_id"   property="centerId"    javaType="java.lang.Integer"/>
+        <result column="worker_id"   property="workerId"    javaType="java.lang.Integer"/>
+        <result column="ip"          property="ip"          javaType="java.lang.String"/>
+        <result column="port"        property="port"        javaType="java.lang.Integer"/>
+        <result column="application" property="application" javaType="java.lang.String"/>
+        <result column="create_time" property="createTime"  javaType="java.util.Date"/>
+        <result column="update_time" property="updateTime"  javaType="java.util.Date"/>
+    </resultMap>
+
+    <insert id="save">
+        INSERT
+          INTO snowflake (
+               id,
+               center_id,
+               worker_id,
+               ip,
+               port,
+               application,
+               create_time,
+               update_time
+          ) VALUE (
+               #{id,          jdbcType=VARCHAR},
+               #{centerId,    jdbcType=INTEGER},
+               #{workerId,    jdbcType=INTEGER},
+               #{ip,          jdbcType=VARCHAR},
+               #{port,        jdbcType=INTEGER},
+               #{application, jdbcType=VARCHAR},
+               #{createTime,  jdbcType=TIMESTAMP},
+               #{updateTime,  jdbcType=TIMESTAMP}
+          )
+    </insert>
+
+    <select id="get" resultMap="snowflake">
+        SELECT *
+          FROM snowflake
+        <include refid="WHERE_SQL"/>
+    </select>
+
+    <select id="count" resultType="java.lang.Long">
+        SELECT COUNT(id)
+          FROM snowflake
+        <include refid="WHERE_SQL"/>
+    </select>
+</mapper>

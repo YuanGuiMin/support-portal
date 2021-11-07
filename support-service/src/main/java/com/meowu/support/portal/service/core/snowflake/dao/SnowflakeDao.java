@@ -1,10 +1,9 @@
 package com.meowu.support.portal.service.core.snowflake.dao;
 
 import com.meowu.commons.mybatis.mysql.criteria.Criteria;
-import com.meowu.commons.mybatis.mysql.criteria.Criterion;
 import com.meowu.commons.mybatis.mysql.criteria.Restrictions;
 import com.meowu.commons.utils.utils.AssertUtils;
-import com.meowu.commons.utils.utils.SnowflakeUtils;
+import com.meowu.commons.utils.utils.IDUtils;
 import com.meowu.support.portal.client.snowflake.entity.Snowflake;
 import com.meowu.support.portal.service.core.snowflake.dao.mapper.SnowflakeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +13,6 @@ import java.util.Date;
 
 @Repository
 public class SnowflakeDao{
-
-    @Autowired
-    private SnowflakeUtils snowflakeUtils;
 
     @Autowired
     private SnowflakeMapper snowflakeMapper;
@@ -29,7 +25,7 @@ public class SnowflakeDao{
         AssertUtils.notNull(snowflake.getCenterId(), "snowflake center id must not be null");
         AssertUtils.notNull(snowflake.getWorkerId(), "snowflake worker id must not be null");
 
-        snowflake.setId(snowflakeUtils.getId());
+        snowflake.setId(IDUtils.uuid());
         snowflake.setCreateTime(new Date());
         snowflake.setUpdateTime(snowflake.getCreateTime());
 
