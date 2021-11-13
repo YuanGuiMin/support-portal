@@ -154,6 +154,15 @@
                 </filters>
             </build>
         </profile>
+
+        <profile>
+            <id>production</id>
+            <build>
+                <filters>
+                    <filter>profile-production.properties</filter>
+                </filters>
+            </build>
+        </profile>
     </profiles>
 
     <build>
